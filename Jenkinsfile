@@ -50,17 +50,17 @@ pipeline {
             }
         }
 
-        stage("Unit test"){
-        steps{
-        sh "mvn test"
-        }
-        }
+        stage("Unit test") {
+                    steps {
+                        sh "mvn test"
+                    }
+                }
 
-        stage("Docker build"){
-            steps{
-            script{
-            sh 'docker build -t yhe494/COMP367_LAB2:1.3 .'}}}
-    }
+                stage("Docker build") {
+                    steps {
+                        sh 'docker build -t yhe494/COMP367_LAB2:1.3 .'
+                    }
+                }
         stage("Docker login"){
             steps{
                  script{
