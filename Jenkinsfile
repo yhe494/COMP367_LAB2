@@ -46,7 +46,7 @@ pipeline {
                 docker build -t ${DOCKER_IMAGE} .
 
                 # Login and push
-                echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin
+                docker login -u $DOCKERHUB_CREDS_USR -p $DOCKERHUB_CREDS_PSW
                 docker push ${DOCKER_IMAGE}
 
                 # Logout immediately to minimize credential exposure
