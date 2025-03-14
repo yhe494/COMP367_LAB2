@@ -5,10 +5,10 @@ pipeline {
         maven 'Maven 3'
     }
 
-    environment
-    {
-        DOCKERHUB_PWD=credentials('CredentialID_DockerHubPWD')
+    environment {
+        DOCKERHUB_CREDS = credentials('CredentialID_DockerHubPWD')
     }
+
     stages {
         stage('Checkout') {
             steps {
@@ -22,46 +22,39 @@ pipeline {
             }
         }
 
-        stage('Morning Greeting') {
+        stage('Time-Based Greeting') {
             steps {
                 script {
-                    // Get the current hour
                     def hour = new java.util.Date().hours
                     if (hour < 12) {
                         echo 'Good Morning!'
                     } else {
-                        echo 'It is no longer morning.'
-                    }
-                }
-            }
-        }
-
-        stage('Afternoon Greeting') {
-            steps {
-                script {
-                    // Get the current hour
-                    def hour = new java.util.Date().hours
-                    if (hour >= 12) {
                         echo 'Good Afternoon!'
-                    } else {
-                        echo 'It is not yet afternoon.'
                     }
                 }
             }
         }
 
+        stage("Docker Build & Push") {
+            steps {
+                sh '''
+                # Ensure Docker is in PATH
+                export PATH=$PATH:/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin
 
-                stage("Docker build") {
-                    steps {
-                        sh 'docker build -t yhe494/COMP367_LAB2:1.3 .'
-                    }
-                }
-        stage("Docker login"){
-            steps{
-                 script{
-                    sh 'docker login -u yhe494 -p ${DOCKERHUB_PWD}'
-                 }
+                # Build the image
+                docker build -t yhe494/COMP367_LAB2:1.3 .
+
+                # Login and push
+                echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin
+                docker push yhe494/COMP367_LAB2:1.3
+                '''
             }
         }
-}
+    }
+
+    post {
+        always {
+            sh 'docker logout'
+        }
+    }
 }
