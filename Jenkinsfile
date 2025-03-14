@@ -38,23 +38,29 @@ pipeline {
 
         stage("Docker Build & Push") {
             steps {
-                sh '''
-                # Ensure Docker is in PATH
-                export PATH=$PATH:/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin
+                withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_TOKEN')]) {
+                    sh '''
+                    # Ensure Docker is in PATH
+                    export PATH=$PATH:/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin
 
-                # Build the image
-                docker build -t ${DOCKER_IMAGE} .
+                    # Build the image
+                    docker build -t ${DOCKER_IMAGE} .
 
-                # Login and push
-                docker login -u $DOCKERHUB_CREDS_USR -p $DOCKERHUB_CREDS_PSW
-                docker push ${DOCKER_IMAGE}
+                    # Debug - check if Docker is working
+                    docker info
 
-                # Logout immediately to minimize credential exposure
-                docker logout
-                '''
+                    # Login with personal access token
+                    echo $DOCKER_TOKEN | docker login -u yhe494 --password-stdin
+
+                    # Try to push (with verbose option)
+                    docker push ${DOCKER_IMAGE}
+
+                    # Logout immediately to minimize credential exposure
+                    docker logout
+                    '''
+                }
             }
         }
-    }
 
     post {
         always {
