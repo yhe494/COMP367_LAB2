@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDS = credentials('CredentialID_DockerHubPWD')
-        DOCKER_IMAGE = "yhe494/comp367_lab2:1.3"  // Lowercase image name
+        DOCKER_IMAGE = "yhe494/comp367_lab2:1.3"
     }
 
     stages {
