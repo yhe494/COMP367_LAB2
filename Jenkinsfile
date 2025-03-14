@@ -23,20 +23,6 @@ pipeline {
             }
         }
 
-        stage('Time-Based Greeting') {
-            steps {
-                script {
-                    import java.time.LocalTime
-                    def hour = LocalTime.now().hour
-                    if (hour < 12) {
-                        echo 'Good Morning!'
-                    } else {
-                        echo 'Good Afternoon!'
-                    }
-                }
-            }
-        }
-
         stage("Docker Build & Push") {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_TOKEN')]) {
