@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDS = credentials('CredentialID_DockerHubPWD')
+        DOCKER_IMAGE = "yhe494/comp367_lab2:1.3"  // Lowercase image name
     }
 
     stages {
@@ -39,14 +40,17 @@ pipeline {
             steps {
                 sh '''
                 # Ensure Docker is in PATH
-                export PATH=$PATH:/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin
+                export PATH=$PATH:/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin
 
                 # Build the image
-                docker build -t yhe494/COMP367_LAB2:1.3 .
+                docker build -t ${DOCKER_IMAGE} .
 
                 # Login and push
                 echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin
-                docker push yhe494/COMP367_LAB2:1.3
+                docker push ${DOCKER_IMAGE}
+
+                # Logout immediately to minimize credential exposure
+                docker logout
                 '''
             }
         }
@@ -54,7 +58,13 @@ pipeline {
 
     post {
         always {
-            sh 'docker logout'
+            echo "Pipeline completed"
+        }
+        success {
+            echo "Pipeline succeeded"
+        }
+        failure {
+            echo "Pipeline failed"
         }
     }
 }
