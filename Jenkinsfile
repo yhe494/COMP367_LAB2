@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        DOCKERHUB_CREDS = credentials('dockerhub-token')
+        DOCKERHUB_CREDS = credentials('CredentialID_DockerHubPWD')
         DOCKER_IMAGE = "yhe494/comp367_lab2:1.3"
     }
 
