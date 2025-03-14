@@ -26,7 +26,8 @@ pipeline {
         stage('Time-Based Greeting') {
             steps {
                 script {
-                    def hour = new java.util.Date().hours
+                    import java.time.LocalTime
+                    def hour = LocalTime.now().hour
                     if (hour < 12) {
                         echo 'Good Morning!'
                     } else {
@@ -61,6 +62,7 @@ pipeline {
                 }
             }
         }
+    }
 
     post {
         always {
@@ -72,5 +74,8 @@ pipeline {
         failure {
             echo "Pipeline failed"
         }
+        cleanup {
+            cleanWs()
+        }
     }
-
+}
