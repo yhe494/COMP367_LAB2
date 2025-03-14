@@ -5,6 +5,10 @@ pipeline {
         maven 'Maven 3'
     }
 
+    environment
+    {
+        DOCKERHUB_PWD=credentials('CredentialID_DockerHubPWD')
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -46,10 +50,22 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the application...'
+        stage("Unit test"){
+        steps{
+        sh "mvn test"
+        }
+        }
+
+        stage("Docker build"){
+            steps{
+            script{
+            sh 'docker build -t yhe494/COMP367_LAB2:1.3 .'}}}
+    }
+        stage("Docker login"){
+            steps{
+                 script{
+                    sh 'docker login -u yhe494 -p ${DOCKERHUB_PWD}'
+                 }
             }
         }
-    }
 }
